@@ -1,0 +1,10 @@
+/*
+ * EXPERIMENT: the board's vbatt node senses the battery on AIN7 (P0.31), which
+ * is also the ext-power control pin. Probe AIN2 (P0.04), the only analog pin
+ * the board file leaves unused. Divider values are left as-is.
+ */
+/ {
+	vbatt {
+		io-channels = <&adc 2>;
+	};
+};

@@ -1,0 +1,11 @@
+/*
+ * The board's vbatt node senses the battery on AIN7 (P0.31), which is also the
+ * ext-power control pin, so it reads ~0.4 V and ZMK reports 0%. The battery is
+ * actually on AIN2 (P0.04); verified on hardware (~3.0 V at the pin, 100% when
+ * fully charged). The divider values from the board file are left as-is.
+ */
+/ {
+	vbatt {
+		io-channels = <&adc 2>;
+	};
+};

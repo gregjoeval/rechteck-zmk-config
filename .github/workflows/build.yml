@@ -1,5 +1,22 @@
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
+  prepare:
+    name: Prepare
+    runs-on: ubuntu-latest
+    outputs:
+      short_sha: ${{ steps.sha.outputs.short_sha }}
+    steps:
+      - name: Short commit SHA
+        id: sha
+        env:
+          # On pull_request events github.sha is a temporary merge commit,
+          # so prefer the PR head commit, which is the one you can find in git.
+          SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: echo "short_sha=${SHA::7}" >> "$GITHUB_OUTPUT"
+
   build:
-    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@v0.3
+    needs: prepare
+    uses: ./.github/workflows/build-user-config.yml
+    with:
+      archive_name: firmware_${{ needs.prepare.outputs.short_sha }}

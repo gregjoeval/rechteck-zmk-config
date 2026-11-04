@@ -18,12 +18,12 @@
 
         bootloader_combo {
             bindings = <&bootloader>;
-            key-positions = <57 58 59 60 13>;
+            key-positions = <57 58 60 13>;
         };
 
         sys_reset_combo {
             bindings = <&sys_reset>;
-            key-positions = <0 57 58 59 60>;
+            key-positions = <0 57 58 60>;
         };
     };
 

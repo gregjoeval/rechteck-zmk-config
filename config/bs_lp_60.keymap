@@ -25,6 +25,11 @@
             bindings = <&sys_reset>;
             key-positions = <0 57 58 60>;
         };
+
+        caps_lock_left_alt_combo {
+            bindings = <&kp CAPSLOCK>;
+            key-positions = <28 55>;
+        };
     };
 
     behaviors {

@@ -26,6 +26,21 @@
             key-positions = <0 57 58 60>;
         };
 
+        delete_left_alt_combo {
+            bindings = <&kp DELETE>;
+            key-positions = <55 13>;
+        };
+
+        delete_right_alt_combo {
+            bindings = <&kp DELETE>;
+            key-positions = <57 13>;
+        };
+
+        caps_lock_right_alt_combo {
+            bindings = <&kp CAPSLOCK>;
+            key-positions = <28 57>;
+        };
+
         caps_lock_left_alt_combo {
             bindings = <&kp CAPSLOCK>;
             key-positions = <28 55>;
@@ -88,11 +103,11 @@
 
             label = "Function";
             bindings = <
-&to 0   &kp F1    &kp F2    &kp F3     &kp F4  &kp F5  &kp F6    &kp F7         &kp F8       &kp F9     &kp F10    &kp F11        &kp F12  &kp DELETE
-&trans  &kp HOME  &kp UP    &kp END    &trans  &trans  &trans    &trans         &trans       &trans     &trans     &trans         &trans   &trans
-&trans  &kp LEFT  &kp DOWN  &kp RIGHT  &trans  &trans  &kp HOME  &kp PAGE_DOWN  &kp PAGE_UP  &kp END    &trans     &kp GRAVE               &trans
-&trans  &trans    &trans    &trans     &trans  &trans  &trans    &trans         &trans       &kp TILDE  &trans                             &trans
-&trans  &trans              &trans                     &trans                                           &kp PSCRN  &td_sys_layer  &trans   &td_ctrl_layer
+&to 0   &kp F1    &kp F2    &kp F3     &kp F4      &kp F5  &kp F6    &kp F7         &kp F8       &kp F9     &kp F10    &kp F11        &kp F12  &trans
+&trans  &kp HOME  &kp UP    &kp END    &trans      &trans  &trans    &trans         &trans       &trans     &trans     &trans         &trans   &trans
+&trans  &kp LEFT  &kp DOWN  &kp RIGHT  &trans      &trans  &kp HOME  &kp PAGE_DOWN  &kp PAGE_UP  &kp END    &trans     &kp GRAVE               &trans
+&trans  &trans    &trans    &trans     &kp INSERT  &trans  &trans    &trans         &trans       &kp TILDE  &trans                             &trans
+&trans  &trans              &trans                         &trans                                           &kp PSCRN  &td_sys_layer  &trans   &td_ctrl_layer
             >;
         };
 

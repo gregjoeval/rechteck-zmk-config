@@ -1,2 +1,2 @@
 zephyr_library()
-zephyr_library_sources_ifdef(CONFIG_LAYER_LED src/layer_led.c)
+zephyr_library_sources_ifdef(CONFIG_BLE_PROFILE_LED src/ble_profile_led.c)

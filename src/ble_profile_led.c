@@ -1,5 +1,6 @@
 /*
- * Flash the board's blue_led N times when the highest active layer becomes N.
+ * Flash the board's blue_led (profile index + 1) times when the active Bluetooth
+ * profile changes: 1 flash for profile 0, 2 for profile 1, and so on.
  */
 
 #include <zephyr/kernel.h>
@@ -8,16 +9,16 @@
 #include <zephyr/logging/log.h>
 
 #include <zmk/event_manager.h>
-#include <zmk/events/layer_state_changed.h>
-#include <zmk/keymap.h>
+#include <zmk/events/ble_active_profile_changed.h>
 
-LOG_MODULE_REGISTER(layer_led, CONFIG_ZMK_LOG_LEVEL);
+LOG_MODULE_REGISTER(ble_profile_led, CONFIG_ZMK_LOG_LEVEL);
 
 static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(DT_NODELABEL(blue_led), gpios);
 
 static struct k_work_delayable flash_work;
 static uint8_t flashes_left;
 static bool led_on;
+static int last_profile = -1;
 
 /* Turns the LED on and off in turn, rescheduling itself until the flashes run out. */
 static void flash_work_cb(struct k_work *work) {
@@ -25,7 +26,7 @@ static void flash_work_cb(struct k_work *work) {
         gpio_pin_set_dt(&led, 0);
         led_on = false;
         if (flashes_left > 0) {
-            k_work_schedule(&flash_work, K_MSEC(CONFIG_LAYER_LED_FLASH_MS));
+            k_work_schedule(&flash_work, K_MSEC(CONFIG_BLE_PROFILE_LED_FLASH_MS));
         }
         return;
     }
@@ -34,7 +35,7 @@ static void flash_work_cb(struct k_work *work) {
         flashes_left--;
         gpio_pin_set_dt(&led, 1);
         led_on = true;
-        k_work_schedule(&flash_work, K_MSEC(CONFIG_LAYER_LED_FLASH_MS));
+        k_work_schedule(&flash_work, K_MSEC(CONFIG_BLE_PROFILE_LED_FLASH_MS));
     }
 }
 
@@ -49,22 +50,27 @@ static void start_flashes(uint8_t count) {
     }
 }
 
-static int layer_led_listener(const zmk_event_t *eh) {
-    if (as_zmk_layer_state_changed(eh) == NULL) {
+/*
+ * ZMK also raises this event when the active profile connects or disconnects, so
+ * only flash when the profile index actually changes.
+ */
+static int ble_profile_led_listener(const zmk_event_t *eh) {
+    const struct zmk_ble_active_profile_changed *ev = as_zmk_ble_active_profile_changed(eh);
+    if (ev == NULL || ev->index == last_profile) {
         return ZMK_EV_EVENT_BUBBLE;
     }
 
-    uint8_t layer = zmk_keymap_highest_layer_active();
-    LOG_DBG("highest active layer %d, flashing %d times", layer, layer);
-    start_flashes(layer);
+    last_profile = ev->index;
+    LOG_DBG("active profile %d, flashing %d times", ev->index, ev->index + 1);
+    start_flashes(ev->index + 1);
 
     return ZMK_EV_EVENT_BUBBLE;
 }
 
-ZMK_LISTENER(layer_led, layer_led_listener);
-ZMK_SUBSCRIPTION(layer_led, zmk_layer_state_changed);
+ZMK_LISTENER(ble_profile_led, ble_profile_led_listener);
+ZMK_SUBSCRIPTION(ble_profile_led, zmk_ble_active_profile_changed);
 
-static int layer_led_init(void) {
+static int ble_profile_led_init(void) {
     if (!gpio_is_ready_dt(&led)) {
         LOG_ERR("LED GPIO is not ready");
         return -ENODEV;
@@ -78,11 +84,11 @@ static int layer_led_init(void) {
 
     k_work_init_delayable(&flash_work, flash_work_cb);
 
-#if IS_ENABLED(CONFIG_LAYER_LED_BOOT_TEST)
+#if IS_ENABLED(CONFIG_BLE_PROFILE_LED_BOOT_TEST)
     start_flashes(3);
 #endif
 
     return 0;
 }
 
-SYS_INIT(layer_led_init, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);
+SYS_INIT(ble_profile_led_init, APPLICATION, CONFIG_APPLICATION_INIT_PRIORITY);

@@ -1,20 +1,21 @@
-config LAYER_LED
-	bool "Flash an LED with the active layer number"
+config BLE_PROFILE_LED
+	bool "Flash an LED with the active Bluetooth profile"
 	default y
+	depends on ZMK_BLE
 	help
-	  Flash the board's blue_led N times when the highest active layer
-	  changes to layer N. The base layer (0) does not flash.
+	  Flash the board's blue_led (profile index + 1) times when the active
+	  Bluetooth profile changes: 1 flash for profile 0, 2 for profile 1, etc.
 
-if LAYER_LED
+if BLE_PROFILE_LED
 
-config LAYER_LED_FLASH_MS
+config BLE_PROFILE_LED_FLASH_MS
 	int "Duration of each flash and each gap between flashes, in ms"
 	default 150
 
-config LAYER_LED_BOOT_TEST
+config BLE_PROFILE_LED_BOOT_TEST
 	bool "Flash the LED 3 times at boot"
 	default y
 	help
 	  Confirms which physical LED blue_led drives. Turn off once known.
 
-endif # LAYER_LED
+endif # BLE_PROFILE_LED

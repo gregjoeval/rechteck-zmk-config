@@ -1,0 +1,20 @@
+config LAYER_LED
+	bool "Flash an LED with the active layer number"
+	default y
+	help
+	  Flash the board's blue_led N times when the highest active layer
+	  changes to layer N. The base layer (0) does not flash.
+
+if LAYER_LED
+
+config LAYER_LED_FLASH_MS
+	int "Duration of each flash and each gap between flashes, in ms"
+	default 150
+
+config LAYER_LED_BOOT_TEST
+	bool "Flash the LED 3 times at boot"
+	default y
+	help
+	  Confirms which physical LED blue_led drives. Turn off once known.
+
+endif # LAYER_LED

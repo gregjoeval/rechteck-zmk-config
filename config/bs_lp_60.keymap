@@ -55,7 +55,7 @@
             bindings = <&kp BACKSPACE>, <&kp DELETE>;
 
             #binding-cells = <0>;
-            mods = <(MOD_LSFT|MOD_RSFT)>;
+            mods = <(MOD_RALT)>;
         };
 
         caps_modmorph: caps_modmorph {
@@ -64,7 +64,7 @@
             bindings = <&func_layer_tapdace>, <&kp CAPSLOCK>;
 
             #binding-cells = <0>;
-            mods = <(MOD_LALT|MOD_RALT)>;
+            mods = <(MOD_RALT)>;
         };
     };
 

@@ -18,13 +18,13 @@
 
         bootloader_combo {
             bindings = <&bootloader>;
-            key-positions = <13 28 58>;
+            key-positions = <13 28 57>;
             timeout-ms = <150>;
         };
 
         sys_reset_combo {
             bindings = <&sys_reset>;
-            key-positions = <0 28 58>;
+            key-positions = <28 0 57>;
             timeout-ms = <150>;
         };
     };

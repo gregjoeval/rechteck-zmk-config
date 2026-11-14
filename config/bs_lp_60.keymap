@@ -7,6 +7,7 @@
 #include <dt-bindings/zmk/reset.h>
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/bt.h>
+#include <dt-bindings/zmk/ext_power.h>
 #include <dt-bindings/zmk/keys.h>
 
 #define BAS_L 0
@@ -26,6 +27,18 @@
             bindings = <&sys_reset>;
             key-positions = <28 60 54>;
             timeout-ms = <150>;
+        };
+    };
+
+    macros {
+        // TEMPORARY TEST: cut ext-power (P0.31) for 5 seconds, then turn it back on,
+        // to see what it controls. Ends with EP_ON so the saved state is never left off.
+        ext_power_test: ext_power_test {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            wait-ms = <0>;
+            tap-ms = <10>;
+            bindings = <&macro_wait_time 5000>, <&ext_power EP_OFF>, <&macro_wait_time 0>, <&ext_power EP_ON>;
         };
     };
 
@@ -129,7 +142,7 @@
 &trans  &trans        &trans        &trans        &trans        &trans        &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans
 &trans  &trans        &trans        &trans        &trans        &trans        &trans  &trans  &trans  &trans  &trans      &trans          &trans
 &trans  &trans        &trans        &trans        &trans        &trans        &trans  &trans  &trans  &trans  &trans                      &trans
-&trans  &trans                      &trans                                    &trans                          &trans      &trans  &trans  &trans
+&ext_power_test  &trans                      &trans                                    &trans                          &trans      &trans  &trans  &trans
             >;
 
             label = "System";

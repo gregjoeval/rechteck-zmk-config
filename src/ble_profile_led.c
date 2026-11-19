@@ -72,7 +72,12 @@ static void flash_work_cb(struct k_work *work) {
 
     set_led(!led_on);
     toggles_left--;
-    k_work_schedule(&flash_work, K_MSEC(led_on ? on_ms : CONFIG_BLE_PROFILE_LED_FLASH_MS));
+
+    /* After the last toggle, finish at once rather than waiting out one more gap, so a
+     * profile flash queued behind the boot flash starts one gap later, not two. */
+    k_timeout_t next =
+        toggles_left == 0 ? K_NO_WAIT : K_MSEC(led_on ? on_ms : CONFIG_BLE_PROFILE_LED_FLASH_MS);
+    k_work_schedule(&flash_work, next);
 }
 
 /*

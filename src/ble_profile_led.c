@@ -39,6 +39,8 @@ static bool boot_flash_running;
 static void set_led(bool on) {
     led_on = on;
     gpio_pin_set_dt(&led, on);
+    LOG_DBG("led %s (toggles left %d, boot flash %d)", on ? "on" : "off", toggles_left,
+            boot_flash_running);
 }
 
 /* One tick per LED toggle; each flash is an on toggle followed by an off toggle. */
@@ -48,6 +50,7 @@ static void flash_work_cb(struct k_work *work) {
 
         if (count != NO_REQUEST) {
             /* Restart from off with a gap, so a flash cut short is not read as the next one. */
+            LOG_DBG("starting %d profile flashes", (int)count);
             set_led(false);
             toggles_left = count * 2;
             on_ms = CONFIG_BLE_PROFILE_LED_FLASH_MS;
@@ -57,6 +60,9 @@ static void flash_work_cb(struct k_work *work) {
     }
 
     if (toggles_left == 0) {
+        if (boot_flash_running) {
+            LOG_DBG("boot flash done");
+        }
         boot_flash_running = false;
         if (atomic_get(&request) != NO_REQUEST) {
             k_work_schedule(&flash_work, K_NO_WAIT);

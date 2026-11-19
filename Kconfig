@@ -16,11 +16,19 @@ config BLE_PROFILE_LED_FLASH_MS
 	range 20 1000
 	default 150
 
-config BLE_PROFILE_LED_BOOT_TEST
-	bool "Flash the LED 3 times at boot"
+config BLE_PROFILE_LED_BOOT_FLASH
+	bool "Flash the LED once, for a long time, at boot"
+	default y
 	help
-	  Confirms which physical LED blue_led drives. A profile flash requested
-	  during the test waits until it has finished. Leave off once the LED is
-	  known, since it also runs on every wake from deep sleep.
+	  Holds the LED on for BLE_PROFILE_LED_BOOT_MS at every boot, which includes
+	  a sys reset and a wake from deep sleep, so you can tell the keyboard has
+	  turned on. It is one long flash, which looks nothing like the short
+	  profile flashes. A profile flash requested during it waits until it ends.
+
+config BLE_PROFILE_LED_BOOT_MS
+	int "How long the boot flash stays on, in ms"
+	depends on BLE_PROFILE_LED_BOOT_FLASH
+	range 100 3000
+	default 1000
 
 endif # BLE_PROFILE_LED

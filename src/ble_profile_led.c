@@ -1,6 +1,8 @@
 /*
  * Flash the board's blue_led (profile index + 1) times when the active Bluetooth
- * profile changes: 1 flash for profile 0, 2 for profile 1, and so on.
+ * profile changes: 1 flash for profile 0, 2 for profile 1, and so on. At boot (which
+ * includes a sys reset and a wake from deep sleep) it first holds the LED on for one
+ * long flash, so the keyboard turning on is not mistaken for a profile flash.
  *
  * The LED and the flash counters are only touched by flash_work_cb on the system
  * workqueue. The listener just records the requested count, so no lock is needed.
@@ -31,7 +33,8 @@ static atomic_t led_ready = ATOMIC_INIT(0);
 /* Owned by flash_work_cb. */
 static bool led_on;
 static uint8_t toggles_left;
-static bool boot_test_running;
+static uint32_t on_ms;
+static bool boot_flash_running;
 
 static void set_led(bool on) {
     led_on = on;
@@ -40,20 +43,21 @@ static void set_led(bool on) {
 
 /* One tick per LED toggle; each flash is an on toggle followed by an off toggle. */
 static void flash_work_cb(struct k_work *work) {
-    if (!boot_test_running) {
+    if (!boot_flash_running) {
         atomic_val_t count = atomic_set(&request, NO_REQUEST);
 
         if (count != NO_REQUEST) {
             /* Restart from off with a gap, so a flash cut short is not read as the next one. */
             set_led(false);
             toggles_left = count * 2;
+            on_ms = CONFIG_BLE_PROFILE_LED_FLASH_MS;
             k_work_schedule(&flash_work, K_MSEC(CONFIG_BLE_PROFILE_LED_FLASH_MS));
             return;
         }
     }
 
     if (toggles_left == 0) {
-        boot_test_running = false;
+        boot_flash_running = false;
         if (atomic_get(&request) != NO_REQUEST) {
             k_work_schedule(&flash_work, K_NO_WAIT);
         }
@@ -62,7 +66,7 @@ static void flash_work_cb(struct k_work *work) {
 
     set_led(!led_on);
     toggles_left--;
-    k_work_schedule(&flash_work, K_MSEC(CONFIG_BLE_PROFILE_LED_FLASH_MS));
+    k_work_schedule(&flash_work, K_MSEC(led_on ? on_ms : CONFIG_BLE_PROFILE_LED_FLASH_MS));
 }
 
 /*
@@ -105,9 +109,11 @@ static int ble_profile_led_init(void) {
 
     atomic_set(&led_ready, 1);
 
-#if IS_ENABLED(CONFIG_BLE_PROFILE_LED_BOOT_TEST)
-    boot_test_running = true;
-    toggles_left = 3 * 2;
+#if IS_ENABLED(CONFIG_BLE_PROFILE_LED_BOOT_FLASH)
+    /* One long flash: on for BOOT_MS, then off. A profile flash waits for it to finish. */
+    on_ms = CONFIG_BLE_PROFILE_LED_BOOT_MS;
+    boot_flash_running = true;
+    toggles_left = 2;
     k_work_schedule(&flash_work, K_NO_WAIT);
 #endif
 

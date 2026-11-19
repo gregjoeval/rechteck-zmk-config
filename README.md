@@ -68,6 +68,6 @@ Boardsource's board file reads the battery on a pin that is also the external-po
 
 ## Known limits
 
-- The yellow power LED can't be controlled from firmware as far as I can tell: it is probably wired straight to the power supply or charger. Switching the `ext-power` pin (P0.31) off for a few seconds had no visible effect, and what that pin controls is unknown.
+- The yellow power LED appears not to be controllable from firmware: it is probably wired straight to the power supply or charger. Switching the `ext-power` pin (P0.31) off for a few seconds had no visible effect, and what that pin controls is unknown.
 - There is no brightness control for the blue LED; it is fully on or off.
 - The board definition comes from Boardsource's repo and is unpinned (`main`), so changes there could affect builds.

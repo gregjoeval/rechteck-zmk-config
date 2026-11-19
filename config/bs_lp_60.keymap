@@ -13,6 +13,9 @@
     combos {
         compatible = "zmk,combos";
 
+        // Press all four keys together (within 150 ms), on any layer:
+        //   Caps + LShift + RAlt + Bksp  -> bootloader (flash mode)
+        //   Caps + LShift + RAlt + Esc   -> sys reset (restart the keyboard)
         bootloader_combo {
             bindings = <&bootloader>;
             key-positions = <13 41 28 57>;
@@ -27,6 +30,7 @@
     };
 
     behaviors {
+        // Layer keys: hold for the layer while pressed, double-tap to toggle it on and off.
         func_layer_tapdace: func_layer_tapdace {
             compatible = "zmk,behavior-tap-dance";
             label = "FUNC_LAYER_TAPDACE";
@@ -48,6 +52,7 @@
             bindings = <&mo 3>, <&tog 3>;
         };
 
+        // Right Shift turns Backspace into Delete, and the Caps/Fn key into Caps Lock.
         bksp_del_modmorph: bksp_del_modmorph {
             compatible = "zmk,behavior-mod-morph";
             label = "BKSP_DEL_MODMORPH";
@@ -71,13 +76,16 @@
         compatible = "zmk,keymap";
 
         default_layer {
-            // ------------------------------------------------------------------------------------------
-            // | ESC |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  0  |  -  |  =  |   BKSP   |
-            // | TAB  |  Q  |  W  |  E  |  R  |  T  |  Y  |  U  |  I  |  O  |  P  |  [  |  ]  |   "|"   |
-            // | CAPS  |  A  |  S  |  D  |  F  |  G  |  H  |  J  |  K  |  L  |  ;  |  '  |     ENTER    |
-            // |  SHIFT  |  Z  |  X  |  C  |  V  |  B  |  N  |  M  |  ,  |  .  |  /  |      SHIFT       |
-            // |  CTL  |  WIN  |  ALT  |            SPACE              |  ALT  |  WIN  |  MO(1) |  CTL  |
-            // ------------------------------------------------------------------------------------------
+            // -----------------------------------------------------------------------------------------------------------------
+            // |  Esc  |   1   |   2   |   3   |   4   |   5   |   6   |   7   |   8   |   9   |   0   |   -   |   =   | Bksp  |
+            // |  Tab  |   Q   |   W   |   E   |   R   |   T   |   Y   |   U   |   I   |   O   |   P   |   [   |   ]   |   \   |
+            // | Caps/Fn |   A   |   S   |   D   |   F   |   G   |   H   |   J   |   K   |   L   |   ;   |   '   | Enter |
+            // | LShift |   Z   |   X   |   C   |   V   |   B   |   N   |   M   |   ,   |   .   |   /   | RShift |
+            // | LCtrl | LGui  | LAlt  | Space | RAlt  | RGui  |  Fn   | RCtrl |
+            // -----------------------------------------------------------------------------------------------------------------
+            // Esc: Shift or Gui + Esc gives ` and ~ (gresc). Bksp: with Right Shift it is Delete.
+            // Caps/Fn: hold for the Function layer, double-tap to toggle it; Right Shift + it is Caps Lock.
+            // Fn: hold for the Function layer, double-tap to toggle it.
 
             label = "Base";
             bindings = <
@@ -90,13 +98,15 @@
         };
 
         function_layer {
-            // ------------------------------------------------------------------------------------------------
-            // | BT CLR | F1  | F2  | F3  | F4  | F5  | F6  | F7  | F8  | F9  | F10  | F11 | F12 |            |
-            // |  BT 1   |   |  UP |   |       |       |       |       |   |     |    |     |     |           |
-            // |   BT 2   | LT |  DN  | RT |       |       |       |       |   |     |   |     |              |
-            // |    BT 3     |     |      |      |     |     |     |     |     |     |     |                  |
-            // |   BT 4  |      |      |                                    | PRT SCR |       |       |  DEL  |
-            // ------------------------------------------------------------------------------------------------
+            // -----------------------------------------------------------------------------------------------------------------
+            // | Base  |  F1   |  F2   |  F3   |  F4   |  F5   |  F6   |  F7   |  F8   |  F9   |  F10  |  F11  |  F12  |  __   |
+            // |  __   | Home  |  Up   |  End  |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |
+            // |  __   | Left  | Down  | Right |  __   |  __   | Home  | PgDn  | PgUp  |  End  |  __   |   `   |  __   |
+            // |  __   |  __   |  __   |  __   |  Ins  |  __   |  __   |  __   |  __   |   ~   |  __   |  __   |
+            // |  __   |  __   |  __   |  __   | PrtSc |  Sys  |  __   | Ctrl  |
+            // -----------------------------------------------------------------------------------------------------------------
+            // __ passes the key through to the Base layer. Sys and Ctrl: hold to use that layer, double-tap to toggle it.
+            // Reach this layer with Fn or Caps/Fn; Base (top-left) returns to the Base layer.
 
             label = "Function";
             bindings = <
@@ -109,6 +119,15 @@
         };
 
         control_layer {
+            // -----------------------------------------------------------------------------------------------------------------
+            // | Base  | Bri-  | Bri+  |  __   |  __   |  __   |  __   |  __   |  __   |  __   | Mute  | Vol-  | Vol+  |  __   |
+            // |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |
+            // |  __   | Prev  | Play  | Next  |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |
+            // |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |
+            // |  __   |  __   |  __   | Play  |  __   |  __   |  __   |  __   |
+            // -----------------------------------------------------------------------------------------------------------------
+            // Reach this layer by holding Fn, then holding Ctrl (bottom-right). Base (top-left) returns to the Base layer.
+
             bindings = <
 &to 0   &kp C_BRIGHTNESS_DEC  &kp C_BRIGHTNESS_INC  &trans      &trans  &trans  &trans    &trans  &trans  &trans  &kp C_MUTE  &kp C_VOLUME_DOWN  &kp C_VOLUME_UP  &trans
 &trans  &trans                &trans                &trans      &trans  &trans  &trans    &trans  &trans  &trans  &trans      &trans             &trans           &trans
@@ -121,6 +140,16 @@
         };
 
         system_layer {
+            // -----------------------------------------------------------------------------------------------------------------
+            // | Base  |  BT0  |  BT1  |  BT2  |  BT3  |  BT4  |  __   |  __   |  __   |  __   | BtClr |  __   |  __   |  __   |
+            // |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |
+            // |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |
+            // |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |
+            // |  __   |  __   |  __   |  __   |  __   |  __   |  __   |  __   |
+            // -----------------------------------------------------------------------------------------------------------------
+            // Reach this layer by holding Fn, then holding Sys (bottom row, where Right Gui is). Base (top-left) returns to Base.
+            // BT0 to BT4 select Bluetooth profiles 0 to 4 (profile 0 = 1 blue LED flash, 1 = 2 flashes, ...). BtClr clears the current profile's pairing.
+
             bindings = <
 &to 0   &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4  &trans  &trans  &trans  &trans  &bt BT_CLR  &trans  &trans  &trans
 &trans  &trans        &trans        &trans        &trans        &trans        &trans  &trans  &trans  &trans  &trans      &trans  &trans  &trans
